@@ -27,6 +27,7 @@ from .trial_search import (
     search_trials,
     summarize_trial,
 )
+
 log = logging.getLogger("tools")
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"))
 
