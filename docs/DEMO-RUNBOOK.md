@@ -127,9 +127,8 @@
 2. Send this prompt:
    ```
    Create a GitHub Actions workflow at .github/workflows/lint.yml that runs ruff
-   and pytest against apps/api and apps/tools on PRs to main. Use Python 3.12,
-   matrix over the two services, and pip install -e .[dev] inside each service
-   directory.
+   on apps/api and apps/tools on PRs to main. Use Python 3.12, matrix over the
+   two services, and pip install -e .[dev] inside each service directory.
    ```
 3. Watch the agent create `.github/workflows/lint.yml` in the editor. Accept
    the change, then commit and push from the integrated terminal:
