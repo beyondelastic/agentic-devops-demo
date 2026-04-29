@@ -1,0 +1,36 @@
+image:
+  registry: ""               # ACR login server, e.g. mydemo.azurecr.io
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# Workload identity client id (federated to AKS workload identity).
+azureClientId: ""
+
+foundry:
+  endpoint: ""               # e.g. https://<acct>.services.ai.azure.com/api/projects/tm-project
+  agentName: clinical-trial-matcher
+  modelDeploymentName: gpt-4o-mini
+
+appInsights:
+  connectionString: ""
+
+ingress:
+  enabled: true
+  className: nginx
+  host: trial-matcher.example.com
+
+resources:
+  api:
+    requests: { cpu: 200m, memory: 512Mi }
+    limits:   { cpu: 1,    memory: 1Gi }
+  tools:
+    requests: { cpu: 100m, memory: 256Mi }
+    limits:   { cpu: 500m, memory: 512Mi }
+  frontend:
+    requests: { cpu: 50m,  memory: 128Mi }
+    limits:   { cpu: 250m, memory: 256Mi }
+
+autoscaling:
+  api:      { min: 2, max: 20, targetCPU: 70 }
+  tools:    { min: 2, max: 10, targetCPU: 70 }
+  frontend: { min: 2, max: 5,  targetCPU: 70 }

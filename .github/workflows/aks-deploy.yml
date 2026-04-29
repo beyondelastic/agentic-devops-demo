@@ -1,0 +1,61 @@
+name: aks-deploy
+
+# Optional Demo 7: ports the same images to AKS via Helm.
+# Manually triggered so it doesn't run in normal CI.
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Image tag to deploy (defaults to 'latest')"
+        required: false
+        default: "latest"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  helm-deploy:
+    runs-on: ubuntu-latest
+    env:
+      AKS_RESOURCE_GROUP: ${{ vars.AKS_RESOURCE_GROUP }}
+      AKS_CLUSTER_NAME: ${{ vars.AKS_CLUSTER_NAME }}
+      ACR_LOGIN_SERVER: ${{ vars.ACR_LOGIN_SERVER }}
+      AZURE_AI_PROJECT_ENDPOINT: ${{ vars.AZURE_AI_PROJECT_ENDPOINT }}
+      AZURE_FOUNDRY_AGENT_NAME: ${{ vars.AZURE_FOUNDRY_AGENT_NAME }}
+      AZURE_AI_MODEL_DEPLOYMENT: ${{ vars.AZURE_AI_MODEL_DEPLOYMENT }}
+      AKS_WORKLOAD_IDENTITY_CLIENT_ID: ${{ vars.AKS_WORKLOAD_IDENTITY_CLIENT_ID }}
+      APPLICATIONINSIGHTS_CONNECTION_STRING: ${{ secrets.APPLICATIONINSIGHTS_CONNECTION_STRING }}
+      INGRESS_HOST: ${{ vars.INGRESS_HOST }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get AKS credentials
+        run: |
+          az aks get-credentials \
+            -g "$AKS_RESOURCE_GROUP" -n "$AKS_CLUSTER_NAME" \
+            --overwrite-existing
+
+      - name: Helm upgrade --install
+        run: |
+          helm upgrade --install trial-matcher aks/helm \
+            --namespace trial-matcher --create-namespace \
+            --set image.registry="$ACR_LOGIN_SERVER" \
+            --set image.tag="${{ github.event.inputs.image_tag }}" \
+            --set azureClientId="$AKS_WORKLOAD_IDENTITY_CLIENT_ID" \
+            --set foundry.endpoint="$AZURE_AI_PROJECT_ENDPOINT" \
+            --set foundry.agentName="$AZURE_FOUNDRY_AGENT_NAME" \
+            --set foundry.modelDeploymentName="$AZURE_AI_MODEL_DEPLOYMENT" \
+            --set appInsights.connectionString="$APPLICATIONINSIGHTS_CONNECTION_STRING" \
+            --set ingress.host="$INGRESS_HOST"
+
+      - name: Show resources
+        run: kubectl -n trial-matcher get pods,svc,ingress -o wide

@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+name: agentic-devops-demo
+metadata:
+  template: agentic-devops-demo@0.1.0
+services:
+  api:
+    project: ./apps/api
+    language: python
+    host: containerapp
+    docker:
+      path: ../../apps/api/Dockerfile
+      context: ../..
+  tools:
+    project: ./apps/tools
+    language: python
+    host: containerapp
+    docker:
+      path: ../../apps/tools/Dockerfile
+      context: ../..
+  frontend:
+    project: ./apps/frontend
+    language: ts
+    host: containerapp
+    docker:
+      path: ../../apps/frontend/Dockerfile
+      context: ../..
+hooks:
+  preprovision:
+    shell: sh
+    run: infra/scripts/check_apps_exist.sh
+  postdeploy:
+    shell: sh
+    run: |
+      set -e
+      VENV="$(mktemp -d)/venv"
+      python3 -m venv "$VENV"
+      "$VENV/bin/pip" install --quiet --upgrade pip
+      "$VENV/bin/pip" install --quiet azure-ai-projects==2.1.0 azure-identity==1.19.0 pyyaml==6.0.2
+      "$VENV/bin/python" infra/scripts/sync_agent.py

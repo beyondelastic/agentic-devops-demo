@@ -1,0 +1,16 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": { "value": "${AZURE_ENV_NAME}" },
+    "location": { "value": "${AZURE_LOCATION}" },
+    "aiLocation": { "value": "${AZURE_AI_LOCATION=eastus2}" },
+    "modelName": { "value": "${AZURE_AI_MODEL_NAME=gpt-4o-mini}" },
+    "modelVersion": { "value": "${AZURE_AI_MODEL_VERSION=2024-07-18}" },
+    "modelCapacity": { "value": 30 },
+    "toolsApiKey": { "value": "${TOOLS_API_KEY=demo-key}" },
+    "toolsExists": { "value": "${SERVICE_TOOLS_EXISTS=false}" },
+    "apiExists": { "value": "${SERVICE_API_EXISTS=false}" },
+    "frontendExists": { "value": "${SERVICE_FRONTEND_EXISTS=false}" }
+  }
+}

@@ -1,0 +1,42 @@
+services:
+  tools:
+    build:
+      context: .
+      dockerfile: apps/tools/Dockerfile
+    environment:
+      LOG_LEVEL: INFO
+    ports:
+      - "8001:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz').status==200 else 1)"]
+      interval: 10s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      FOUNDRY_MODE: ${FOUNDRY_MODE:-mock}
+      FOUNDRY_PROJECT_ENDPOINT: ${FOUNDRY_PROJECT_ENDPOINT:-}
+      FOUNDRY_AGENT_NAME: ${FOUNDRY_AGENT_NAME:-clinical-trial-matcher}
+      FOUNDRY_MODEL_DEPLOYMENT_NAME: ${FOUNDRY_MODEL_DEPLOYMENT_NAME:-gpt-4o-mini}
+      TOOLS_SERVICE_URL: http://tools:8000
+      ENABLE_MEMORY_LEAK: ${ENABLE_MEMORY_LEAK:-false}
+      LOG_LEVEL: INFO
+    ports:
+      - "8000:8000"
+    depends_on:
+      tools:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    environment:
+      API_HOST: api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - api

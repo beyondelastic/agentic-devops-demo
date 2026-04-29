@@ -1,0 +1,27 @@
+# Example Foundry agent metadata — DO NOT rename to agent-metadata.yaml in main.
+# In Demo 2, the presenter exports a real .foundry/agent-metadata.yaml from the
+# Microsoft Foundry / AI Toolkit VS Code extension, then commits it.
+#
+# This example exists so the sync_agent.py script and runbook have a
+# reference shape to match.
+
+apiVersion: foundry/v1
+kind: PromptAgent
+defaultEnvironment: dev
+environments:
+  dev:
+    projectEndpoint: https://example.services.ai.azure.com/api/projects/tm-project
+    agentName: clinical-trial-matcher
+    modelDeployment: gpt-4o-mini
+
+agentName: clinical-trial-matcher
+description: Matches synthetic patient profiles to demo clinical-trial data.
+
+# Either inline `instructions:` or `instructions_file:` (relative to .foundry/).
+instructions_file: prompts/system.md
+
+tools:
+  - type: openapi
+    name: trial_tools
+    description: Search clinical trials, check eligibility, summarize a trial.
+    # spec_url is resolved at deploy time from TOOLS_OPENAPI_URL.

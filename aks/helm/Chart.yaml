@@ -1,0 +1,6 @@
+apiVersion: v2
+name: trial-matcher
+description: Helm chart that ports the same three images to AKS.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

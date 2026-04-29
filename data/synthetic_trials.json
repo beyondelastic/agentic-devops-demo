@@ -1,0 +1,523 @@
+[
+  {
+    "id": "TM-2025-001",
+    "title": "Phase 2 Trial of TKI-Plus in EGFR-Mutant NSCLC",
+    "condition": "Non-Small Cell Lung Cancer",
+    "phase": "Phase 2",
+    "location": "Boston, MA",
+    "age_min": 18,
+    "age_max": 75,
+    "sex": "all",
+    "inclusion_criteria": [
+      "Histologically confirmed NSCLC",
+      "Documented EGFR exon 19 deletion or L858R mutation",
+      "ECOG performance status 0-1",
+      "Adequate organ function"
+    ],
+    "exclusion_criteria": [
+      "Prior treatment with EGFR TKI",
+      "Active brain metastases",
+      "Pregnancy or lactation"
+    ]
+  },
+  {
+    "id": "TM-2025-002",
+    "title": "CAR-T Cell Therapy in Relapsed B-Cell Lymphoma",
+    "condition": "Diffuse Large B-Cell Lymphoma",
+    "phase": "Phase 1/2",
+    "location": "Houston, TX",
+    "age_min": 18,
+    "age_max": 70,
+    "sex": "all",
+    "inclusion_criteria": [
+      "Relapsed or refractory DLBCL after at least 2 prior lines",
+      "Measurable disease per Lugano criteria",
+      "Adequate cardiac function (LVEF >= 45%)"
+    ],
+    "exclusion_criteria": [
+      "Active CNS lymphoma",
+      "Prior allogeneic stem cell transplant",
+      "Active autoimmune disease requiring immunosuppression"
+    ]
+  },
+  {
+    "id": "TM-2025-003",
+    "title": "GLP-1 + SGLT2 Combination in Type 2 Diabetes",
+    "condition": "Type 2 Diabetes Mellitus",
+    "phase": "Phase 3",
+    "location": "Chicago, IL",
+    "age_min": 30,
+    "age_max": 75,
+    "sex": "all",
+    "inclusion_criteria": [
+      "HbA1c between 7.5% and 10.5%",
+      "BMI 27-45 kg/m^2",
+      "Stable metformin therapy >= 3 months"
+    ],
+    "exclusion_criteria": [
+      "Type 1 diabetes",
+      "eGFR < 45 mL/min/1.73m^2",
+      "History of pancreatitis"
+    ]
+  },
+  {
+    "id": "TM-2025-004",
+    "title": "Anti-Amyloid Antibody in Early Alzheimer's Disease",
+    "condition": "Alzheimer's Disease",
+    "phase": "Phase 3",
+    "location": "San Francisco, CA",
+    "age_min": 55,
+    "age_max": 85,
+    "sex": "all",
+    "inclusion_criteria": [
+      "MMSE score 22-30",
+      "Positive amyloid PET or CSF biomarker",
+      "Reliable study partner"
+    ],
+    "exclusion_criteria": [
+      "History of cerebral hemorrhage",
+      "Anticoagulant use other than aspirin",
+      "More than 4 cerebral microhemorrhages on MRI"
+    ]
+  },
+  {
+    "id": "TM-2025-005",
+    "title": "PD-1/CTLA-4 Bispecific in Advanced Melanoma",
+    "condition": "Metastatic Melanoma",
+    "phase": "Phase 2",
+    "location": "New York, NY",
+    "age_min": 18,
+    "age_max": 99,
+    "sex": "all",
+    "inclusion_criteria": [
+      "Unresectable stage III or IV melanoma",
+      "Progression on prior anti-PD-1 therapy",
+      "Measurable disease per RECIST 1.1"
+    ],
+    "exclusion_criteria": [
+      "Uveal or mucosal melanoma",
+      "Active autoimmune disease",
+      "Prior anti-CTLA-4 therapy"
+    ]
+  },
+  {
+    "id": "TM-2025-006",
+    "title": "Gene Therapy for Sickle Cell Disease",
+    "condition": "Sickle Cell Disease",
+    "phase": "Phase 1/2",
+    "location": "Memphis, TN",
+    "age_min": 12,
+    "age_max": 35,
+    "sex": "all",
+    "inclusion_criteria": [
+      "Confirmed HbSS or HbS-beta0 thalassemia",
+      ">= 4 vaso-occlusive crises in past 24 months",
+      "Adequate organ function"
+    ],
+    "exclusion_criteria": [
+      "Available HLA-matched sibling donor",
+      "Prior gene therapy or stem cell transplant",
+      "HIV infection"
+    ]
+  },
+  {
+    "id": "TM-2025-007",
+    "title": "JAK Inhibitor in Moderate-to-Severe Atopic Dermatitis",
+    "condition": "Atopic Dermatitis",
+    "phase": "Phase 3",
+    "location": "Denver, CO",
+    "age_min": 18,
+    "age_max": 75,
+    "sex": "all",
+    "inclusion_criteria": [
+      "EASI score >= 16",
+      "BSA involvement >= 10%",
+      "Inadequate response to topical therapy"
+    ],
+    "exclusion_criteria": [
+      "Active or recurrent serious infection",
+      "History of malignancy in past 5 years",
+      "Pregnancy or lactation"
+    ]
+  },
+  {
+    "id": "TM-2025-008",
+    "title": "Ketogenic Diet vs Standard Care in Drug-Resistant Epilepsy",
+    "condition": "Epilepsy",
+    "phase": "Phase 2",
+    "location": "Cleveland, OH",
+    "age_min": 18,
+    "age_max": 65,
+    "sex": "all",
+    "inclusion_criteria": [
+      ">= 4 seizures per month despite 2 anti-seizure medications",
+      "Stable medication regimen for >= 8 weeks",
+      "Willingness to follow dietary protocol"
+    ],
+    "exclusion_criteria": [
+      "Pregnancy",
+      "History of pancreatitis or kidney stones",
+      "Eating disorder"
+    ]
+  },
+  {
+    "id": "TM-2025-009",
+    "title": "Digital CBT for Postpartum Depression",
+    "condition": "Postpartum Depression",
+    "phase": "Phase 2",
+    "location": "Seattle, WA",
+    "age_min": 18,
+    "age_max": 45,
+    "sex": "female",
+    "inclusion_criteria": [
+      "Edinburgh Postnatal Depression Scale >= 13",
+      "Within 12 months postpartum",
+      "Smartphone access"
+    ],
+    "exclusion_criteria": [
+      "Active suicidal ideation",
+      "Current psychotic symptoms",
+      "Substance use disorder"
+    ]
+  },
+  {
+    "id": "TM-2025-010",
+    "title": "ARNI in HFpEF",
+    "condition": "Heart Failure with Preserved Ejection Fraction",
+    "phase": "Phase 3",
+    "location": "Atlanta, GA",
+    "age_min": 50,
+    "age_max": 90,
+    "sex": "all",
+    "inclusion_criteria": [
+      "LVEF >= 50%",
+      "NYHA class II-III symptoms",
+      "Elevated NT-proBNP"
+    ],
+    "exclusion_criteria": [
+      "Symptomatic hypotension",
+      "eGFR < 30 mL/min/1.73m^2",
+      "History of angioedema"
+    ]
+  },
+  {
+    "id": "TM-2025-011",
+    "title": "PCSK9 Inhibitor in Familial Hypercholesterolemia",
+    "condition": "Familial Hypercholesterolemia",
+    "phase": "Phase 3",
+    "location": "Minneapolis, MN",
+    "age_min": 18,
+    "age_max": 80,
+    "sex": "all",
+    "inclusion_criteria": [
+      "Genetically confirmed heterozygous FH",
+      "LDL-C >= 100 mg/dL on maximally tolerated statin",
+      "Stable lipid-lowering therapy"
+    ],
+    "exclusion_criteria": [
+      "Homozygous FH",
+      "Severe hepatic impairment",
+      "Recent acute coronary syndrome (< 4 weeks)"
+    ]
+  },
+  {
+    "id": "TM-2025-012",
+    "title": "RSV Vaccine in Older Adults",
+    "condition": "RSV Prevention",
+    "phase": "Phase 3",
+    "location": "Phoenix, AZ",
+    "age_min": 60,
+    "age_max": 99,
+    "sex": "all",
+    "inclusion_criteria": [
+      "Age >= 60 years",
+      "Medically stable",
+      "Able to provide informed consent"
+    ],
+    "exclusion_criteria": [
+      "Prior RSV vaccination",
+      "Severe immunocompromise",
+      "Active acute illness"
+    ]
+  },
+  {
+    "id": "TM-2025-013",
+    "title": "Continuous Glucose Monitor in Pregnancy with Diabetes",
+    "condition": "Gestational Diabetes",
+    "phase": "Phase 2",
+    "location": "Philadelphia, PA",
+    "age_min": 18,
+    "age_max": 45,
+    "sex": "female",
+    "inclusion_criteria": [
+      "Singleton pregnancy at 12-24 weeks gestation",
+      "Diagnosis of GDM or pre-existing T2D",
+      "Smartphone access"
+    ],
+    "exclusion_criteria": [
+      "Type 1 diabetes",
+      "Multiple gestation",
+      "Major fetal anomaly"
+    ]
+  },
+  {
+    "id": "TM-2025-014",
+    "title": "TNF Inhibitor Tapering in Rheumatoid Arthritis Remission",
+    "condition": "Rheumatoid Arthritis",
+    "phase": "Phase 4",
+    "location": "Baltimore, MD",
+    "age_min": 18,
+    "age_max": 80,
+    "sex": "all",
+    "inclusion_criteria": [
+      "Sustained DAS28 remission >= 12 months",
+      "Stable TNF inhibitor therapy",
+      "No recent flares"
+    ],
+    "exclusion_criteria": [
+      "Concurrent JAK inhibitor",
+      "Active infection",
+      "Pregnancy"
+    ]
+  },
+  {
+    "id": "TM-2025-015",
+    "title": "Microbiome Therapy for Recurrent C. difficile",
+    "condition": "Clostridioides difficile Infection",
+    "phase": "Phase 3",
+    "location": "Rochester, MN",
+    "age_min": 18,
+    "age_max": 99,
+    "sex": "all",
+    "inclusion_criteria": [
+      ">= 2 prior CDI recurrences",
+      "Currently in clinical remission on antibiotics",
+      "Able to swallow capsules"
+    ],
+    "exclusion_criteria": [
+      "Severe immunocompromise",
+      "Inflammatory bowel disease flare",
+      "Recent abdominal surgery"
+    ]
+  },
+  {
+    "id": "TM-2025-016",
+    "title": "AI-Guided Mammography Screening Study",
+    "condition": "Breast Cancer Screening",
+    "phase": "Observational",
+    "location": "San Diego, CA",
+    "age_min": 40,
+    "age_max": 74,
+    "sex": "female",
+    "inclusion_criteria": [
+      "Eligible for routine mammographic screening",
+      "No prior breast cancer diagnosis",
+      "Able to consent to data sharing"
+    ],
+    "exclusion_criteria": [
+      "Breast implants",
+      "Active breast symptoms requiring diagnostic workup",
+      "Prior chest radiation"
+    ]
+  },
+  {
+    "id": "TM-2025-017",
+    "title": "Bariatric Surgery vs GLP-1 in Severe Obesity",
+    "condition": "Obesity",
+    "phase": "Phase 3",
+    "location": "Pittsburgh, PA",
+    "age_min": 21,
+    "age_max": 65,
+    "sex": "all",
+    "inclusion_criteria": [
+      "BMI >= 40 or BMI >= 35 with comorbidity",
+      "Failed >= 6 months of medical weight management",
+      "Eligible for bariatric surgery"
+    ],
+    "exclusion_criteria": [
+      "Prior bariatric surgery",
+      "Severe psychiatric illness",
+      "Active substance use disorder"
+    ]
+  },
+  {
+    "id": "TM-2025-018",
+    "title": "Nirmatrelvir Extended Course in Long COVID",
+    "condition": "Long COVID",
+    "phase": "Phase 2",
+    "location": "Nashville, TN",
+    "age_min": 18,
+    "age_max": 75,
+    "sex": "all",
+    "inclusion_criteria": [
+      "Persistent symptoms >= 12 weeks after confirmed SARS-CoV-2 infection",
+      "PASC symptom severity score >= 4",
+      "No alternative explanation for symptoms"
+    ],
+    "exclusion_criteria": [
+      "Renal impairment (eGFR < 30)",
+      "Concurrent strong CYP3A inhibitors",
+      "Active acute COVID-19 infection"
+    ]
+  },
+  {
+    "id": "TM-2025-019",
+    "title": "Prophylactic Antibiotic in Recurrent UTI",
+    "condition": "Recurrent Urinary Tract Infection",
+    "phase": "Phase 4",
+    "location": "Portland, OR",
+    "age_min": 18,
+    "age_max": 75,
+    "sex": "female",
+    "inclusion_criteria": [
+      ">= 3 culture-confirmed UTIs in past 12 months",
+      "Currently asymptomatic",
+      "No structural urinary tract abnormality"
+    ],
+    "exclusion_criteria": [
+      "Pregnancy",
+      "Indwelling catheter",
+      "History of antibiotic-associated colitis"
+    ]
+  },
+  {
+    "id": "TM-2025-020",
+    "title": "Wearable ECG Patch for AFib Detection",
+    "condition": "Atrial Fibrillation Screening",
+    "phase": "Observational",
+    "location": "Miami, FL",
+    "age_min": 65,
+    "age_max": 99,
+    "sex": "all",
+    "inclusion_criteria": [
+      "Age >= 65 years",
+      "CHA2DS2-VASc >= 2",
+      "No prior AFib diagnosis"
+    ],
+    "exclusion_criteria": [
+      "Implanted pacemaker or ICD",
+      "Already on anticoagulation",
+      "Severe skin condition preventing patch wear"
+    ]
+  },
+  {
+    "id": "TM-2025-021",
+    "title": "IL-23 Inhibitor in Moderate-to-Severe Psoriasis",
+    "condition": "Plaque Psoriasis",
+    "phase": "Phase 3",
+    "location": "Detroit, MI",
+    "age_min": 18,
+    "age_max": 80,
+    "sex": "all",
+    "inclusion_criteria": [
+      "PASI >= 12 and BSA >= 10%",
+      "Candidate for systemic therapy",
+      "Stable disease >= 6 months"
+    ],
+    "exclusion_criteria": [
+      "Prior IL-23 inhibitor exposure",
+      "Active or latent TB",
+      "Pregnancy"
+    ]
+  },
+  {
+    "id": "TM-2025-022",
+    "title": "Levodopa-Carbidopa Subcutaneous Pump in Advanced Parkinson's",
+    "condition": "Parkinson's Disease",
+    "phase": "Phase 3",
+    "location": "Charlotte, NC",
+    "age_min": 30,
+    "age_max": 80,
+    "sex": "all",
+    "inclusion_criteria": [
+      "Idiopathic PD with motor fluctuations",
+      ">= 2.5 hours OFF time per day",
+      "Hoehn & Yahr stage 3-4"
+    ],
+    "exclusion_criteria": [
+      "Severe dementia (MMSE < 22)",
+      "Active psychosis",
+      "Severe skin condition at infusion site"
+    ]
+  },
+  {
+    "id": "TM-2025-023",
+    "title": "Pediatric Asthma Biologic Step-Down Study",
+    "condition": "Pediatric Asthma",
+    "phase": "Phase 3",
+    "location": "Cincinnati, OH",
+    "age_min": 6,
+    "age_max": 17,
+    "sex": "all",
+    "inclusion_criteria": [
+      "Severe eosinophilic asthma on biologic >= 12 months",
+      "Well-controlled per ACT score",
+      "Parental consent"
+    ],
+    "exclusion_criteria": [
+      "Asthma exacerbation in past 3 months",
+      "Other significant pulmonary disease",
+      "Active malignancy"
+    ]
+  },
+  {
+    "id": "TM-2025-024",
+    "title": "Statin + Bempedoic Acid in Statin-Intolerant Patients",
+    "condition": "Hyperlipidemia",
+    "phase": "Phase 3",
+    "location": "Indianapolis, IN",
+    "age_min": 40,
+    "age_max": 85,
+    "sex": "all",
+    "inclusion_criteria": [
+      "Documented statin intolerance to >= 2 statins",
+      "LDL-C >= 100 mg/dL",
+      "ASCVD risk >= 7.5%"
+    ],
+    "exclusion_criteria": [
+      "Severe hepatic impairment",
+      "Recent acute coronary syndrome",
+      "Active malignancy"
+    ]
+  },
+  {
+    "id": "TM-2025-025",
+    "title": "MDMA-Assisted Therapy for PTSD",
+    "condition": "Post-Traumatic Stress Disorder",
+    "phase": "Phase 3",
+    "location": "Austin, TX",
+    "age_min": 21,
+    "age_max": 65,
+    "sex": "all",
+    "inclusion_criteria": [
+      "DSM-5 PTSD diagnosis",
+      "CAPS-5 score >= 35",
+      "Stable psychiatric medications"
+    ],
+    "exclusion_criteria": [
+      "Active psychotic disorder",
+      "Cardiovascular disease",
+      "Pregnancy"
+    ]
+  },
+  {
+    "id": "TM-2025-026",
+    "title": "Telehealth Pulmonary Rehab in COPD",
+    "condition": "COPD",
+    "phase": "Phase 3",
+    "location": "Salt Lake City, UT",
+    "age_min": 40,
+    "age_max": 85,
+    "sex": "all",
+    "inclusion_criteria": [
+      "GOLD stage 2-3 COPD",
+      "Stable disease for 4 weeks",
+      "Internet access at home"
+    ],
+    "exclusion_criteria": [
+      "Recent exacerbation requiring hospitalization",
+      "Unstable cardiac disease",
+      "Cognitive impairment preventing participation"
+    ]
+  }
+]

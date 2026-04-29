@@ -1,0 +1,36 @@
+name: build
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/**"
+      - "infra/**"
+      - ".github/workflows/build.yml"
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [api, tools, frontend]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build ${{ matrix.service }} image
+        run: |
+          docker buildx build \
+            --file apps/${{ matrix.service }}/Dockerfile \
+            --tag ${{ matrix.service }}:pr-${{ github.event.pull_request.number }} \
+            --build-arg GIT_SHA=${{ github.sha }} \
+            --build-arg BUILT_AT=$(date -u +%FT%TZ) \
+            --load \
+            .
