@@ -18,6 +18,7 @@ env:
   AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME || 'demo' }}
   AZURE_LOCATION: ${{ vars.AZURE_LOCATION || 'eastus2' }}
   AZURE_AI_LOCATION: ${{ vars.AZURE_AI_LOCATION || 'eastus2' }}
+  AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP || 'rg-aullah-agentic-devops' }}
 
 jobs:
   deploy:
@@ -46,6 +47,7 @@ jobs:
           azd env set AZURE_SUBSCRIPTION_ID "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
           azd env set AZURE_LOCATION "${AZURE_LOCATION}"
           azd env set AZURE_AI_LOCATION "${AZURE_AI_LOCATION}"
+          azd env set AZURE_RESOURCE_GROUP "${AZURE_RESOURCE_GROUP}"
 
       - name: azd up
         run: azd up --no-prompt
