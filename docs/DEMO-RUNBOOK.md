@@ -58,7 +58,22 @@
    logged into the same tenant.
 6. Optional: warm Foundry by sending one chat from your laptop using
    `azd env get-values | grep FRONTEND_URL`.
-7. Provision **Azure SRE Agent** for Demo 6 (one-time, not in Bicep — it's a
+7. Pre-stage the **`/version` one-liner** for Demo 4. The API has internal
+   ingress only, so `curl` from your laptop won't reach it — `az containerapp
+   exec` runs the curl from inside the container. Export the env vars and
+   define a shell alias in the same terminal you'll demo from:
+
+   ```bash
+   eval "$(azd env get-values | grep -E '^AZURE_RESOURCE_GROUP=')"
+   export API_APP=$(az containerapp list -g "$AZURE_RESOURCE_GROUP" \
+     --query "[?tags.\"azd-service-name\"=='api'].name | [0]" -o tsv)
+   alias version='az containerapp exec -g "$AZURE_RESOURCE_GROUP" -n "$API_APP" --command "curl -s http://localhost:8000/version"'
+   ```
+
+   Smoke-test it now — **before** Demo 3 merges the PR, this should 404 (or
+   return whatever `/version` did before the fix). After Demo 4 deploys, the
+   same `version` command returns the new SHA. That contrast is the punchline.
+9. Provision **Azure SRE Agent** for Demo 6 (one-time, not in Bicep — it's a
    tenant-level resource, typically one per team/subscription).
    - Portal → *Create a resource* → search **Azure SRE Agent** → create in the
      same subscription as `rg-<env>-agentic-devops`.
@@ -70,7 +85,7 @@
      sees `adgd-api-<token>` before you go on stage.
    - Optional: install the SRE Agent's GitHub App on this repo if you want the
      "open a remediation PR" beat. Not required for the core Demo 6 narrative.
-8. *(Optional — only if running Demo 7)* Provision the AKS cluster. It is
+10. *(Optional — only if running Demo 7)* Provision the AKS cluster. It is
    **not** part of `azd up`; the workflow at
    [.github/workflows/aks-deploy.yml](../.github/workflows/aks-deploy.yml)
    only runs `helm upgrade`, it does not create the cluster.
@@ -203,11 +218,11 @@ The merge in Demo 3 triggered `deploy.yml`. While it runs:
      `AIProjectClient.agents.create_version` to upsert the agent from the
      committed `.foundry/agent-metadata.yaml`.
 2. When green, hit the frontend URL. Send a real chat — agent responds via Foundry.
-3. Show the new `/version` endpoint:
+3. Show the new `/version` endpoint using the alias staged in pre-show step 7:
    ```bash
-   curl https://<api-fqdn>/version
+   version
    ```
-   *(The API ingress is internal — proxy through the frontend or use `az containerapp exec`.)*
+   The returned `git_sha` matches the merge commit from Demo 3 — proof, not promises.
 
 ---
 
