@@ -58,21 +58,20 @@
    logged into the same tenant.
 6. Optional: warm Foundry by sending one chat from your laptop using
    `azd env get-values | grep FRONTEND_URL`.
-7. Pre-stage the **`/version` one-liner** for Demo 4. The API has internal
-   ingress only, so `curl` from your laptop won't reach it — `az containerapp
-   exec` runs the curl from inside the container. Export the env vars and
-   define a shell alias in the same terminal you'll demo from:
+7. Pre-stage the **`/version` watch loop** for Demo 4. The API has internal
+   ingress only, so `curl` from your laptop won't reach it — the script uses
+   `az containerapp exec` to curl from inside the container, and prints the
+   `git_sha` every 5 seconds.
 
    ```bash
-   eval "$(azd env get-values | grep -E '^AZURE_RESOURCE_GROUP=')"
-   export API_APP=$(az containerapp list -g "$AZURE_RESOURCE_GROUP" \
-     --query "[?tags.\"azd-service-name\"=='api'].name | [0]" -o tsv)
-   alias version='az containerapp exec -g "$AZURE_RESOURCE_GROUP" -n "$API_APP" --command "curl -s http://localhost:8000/version"'
+   ./demo4-version-watch.sh
    ```
 
-   Smoke-test it now — **before** Demo 3 merges the PR, this should 404 (or
-   return whatever `/version` did before the fix). After Demo 4 deploys, the
-   same `version` command returns the new SHA. That contrast is the punchline.
+   Smoke-test it now — **before** Demo 3 merges the PR, this should print
+   `(no response)` (or whatever `/version` did before the fix). After Demo 4
+   deploys, the same loop starts printing the new SHA. That contrast is the
+   punchline. The script auto-resolves `AZURE_RESOURCE_GROUP` and the API
+   container app name from the current azd env — nothing to remember on stage.
 9. Provision **Azure SRE Agent** for Demo 6 (one-time, not in Bicep — it's a
    tenant-level resource, typically one per team/subscription).
    - Portal → *Create a resource* → search **Azure SRE Agent** → create in the
@@ -218,11 +217,13 @@ The merge in Demo 3 triggered `deploy.yml`. While it runs:
      `AIProjectClient.agents.create_version` to upsert the agent from the
      committed `.foundry/agent-metadata.yaml`.
 2. When green, hit the frontend URL. Send a real chat — agent responds via Foundry.
-3. Show the new `/version` endpoint using the alias staged in pre-show step 7:
+3. Show the new `/version` endpoint via the watch loop staged in pre-show
+   step 7 (already running in a side terminal):
    ```bash
-   version
+   ./demo4-version-watch.sh
    ```
-   The returned `git_sha` matches the merge commit from Demo 3 — proof, not promises.
+   The `git_sha` it prints flips from `(no response)` to the merge commit
+   from Demo 3 — proof, not promises.
 
 ---
 
