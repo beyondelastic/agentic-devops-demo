@@ -45,14 +45,6 @@ def readyz() -> dict[str, object]:
     return {"status": "ok", "foundry": health_snapshot(), "leak_mb": leak_size_mb()}
 
 
-@app.get("/version", tags=["probes"])
-def version() -> dict[str, str]:
-    return {
-        "git_sha": os.getenv("GIT_SHA", "unknown"),
-        "built_at": os.getenv("BUILT_AT", "unknown"),
-    }
-
-
 @app.post("/api/chat", tags=["chat"])
 async def chat(req: ChatRequest) -> StreamingResponse:
     settings = get_settings()
