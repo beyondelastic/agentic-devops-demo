@@ -26,7 +26,7 @@ class Settings(BaseSettings):
 
     enable_memory_leak: bool = Field(default=False, alias="ENABLE_MEMORY_LEAK")
 
-    git_sha: str = Field(default="dev", alias="GIT_SHA")
+    git_sha: str = Field(default="unknown", alias="GIT_SHA")
     built_at: str = Field(default="unknown", alias="BUILT_AT")
 
     applicationinsights_connection_string: str | None = Field(

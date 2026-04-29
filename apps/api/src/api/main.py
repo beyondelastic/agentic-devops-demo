@@ -40,6 +40,12 @@ def healthz() -> dict[str, str]:
     return {"status": "ok"}
 
 
+@app.get("/version", tags=["probes"])
+def version() -> dict[str, str]:
+    settings = get_settings()
+    return {"git_sha": settings.git_sha, "built_at": settings.built_at}
+
+
 @app.get("/readyz", tags=["probes"])
 def readyz() -> dict[str, object]:
     return {"status": "ok", "foundry": health_snapshot(), "leak_mb": leak_size_mb()}
