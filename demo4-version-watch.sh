@@ -5,14 +5,13 @@
 #   ./demo4-version-watch.sh           # tail forever (Ctrl+C to stop)
 #   INTERVAL=10 ./demo4-version-watch.sh
 #
-# The API has internal-only ingress, so we can't curl it from the laptop.
-# `az containerapp exec` runs curl from inside the running container.
+# Hits the API container app's external FQDN. Run ./demo4-ingress-external.sh
+# once before recording to flip ingress from internal -> external.
 
 set -euo pipefail
 
 INTERVAL="${INTERVAL:-5}"
 
-# Resolve RG + API container app name from the current azd env.
 eval "$(azd env get-values | grep -E '^AZURE_RESOURCE_GROUP=')"
 : "${AZURE_RESOURCE_GROUP:?AZURE_RESOURCE_GROUP not set — run from an azd-initialized repo}"
 
@@ -26,19 +25,26 @@ if [[ -z "$API_APP" ]]; then
   exit 1
 fi
 
+API_FQDN="$(az containerapp show \
+  -g "$AZURE_RESOURCE_GROUP" -n "$API_APP" \
+  --query "properties.configuration.ingress.fqdn" -o tsv)"
+
+EXTERNAL="$(az containerapp show \
+  -g "$AZURE_RESOURCE_GROUP" -n "$API_APP" \
+  --query "properties.configuration.ingress.external" -o tsv)"
+
+if [[ "$EXTERNAL" != "true" ]]; then
+  echo "WARNING: API ingress is internal — /version will not be reachable from your laptop." >&2
+  echo "Run ./demo4-ingress-external.sh first to flip it (and ./demo4-ingress-internal.sh to revert)." >&2
+fi
+
 echo "RG:       $AZURE_RESOURCE_GROUP"
-echo "API app:  $API_APP"
+echo "API:      $API_APP"
+echo "URL:      https://${API_FQDN}/version"
 echo "Interval: ${INTERVAL}s  (Ctrl+C to stop)"
 echo
 
-version() {
-  az containerapp exec \
-    -g "$AZURE_RESOURCE_GROUP" \
-    -n "$API_APP" \
-    --command "curl -s http://localhost:8000/version"
-}
-
 while true; do
-  echo "$(date +%H:%M:%S)  $(version 2>/dev/null | grep -oE '"git_sha":"[^"]+"' || echo '(no response)')"
+  echo "$(date +%H:%M:%S)  $(curl -sf --max-time 4 "https://${API_FQDN}/version" 2>/dev/null | grep -oE '"git_sha":"[^"]+"' || echo '(no response)')"
   sleep "$INTERVAL"
 done

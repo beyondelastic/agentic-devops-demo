@@ -58,20 +58,27 @@
    logged into the same tenant.
 6. Optional: warm Foundry by sending one chat from your laptop using
    `azd env get-values | grep FRONTEND_URL`.
-7. Pre-stage the **`/version` watch loop** for Demo 4. The API has internal
-   ingress only, so `curl` from your laptop won't reach it — the script uses
-   `az containerapp exec` to curl from inside the container, and prints the
-   `git_sha` every 5 seconds.
+7. Pre-stage the **`/version` watch loop** for Demo 4. The API normally has
+   internal-only ingress, so flip it to external for the recording, then run
+   the watcher (curls `/version` every 5s and prints `git_sha`):
 
    ```bash
-   ./demo4-version-watch.sh
+   ./demo4-ingress-external.sh   # one-time flip; ~30s for LB to propagate
+   ./demo4-version-watch.sh      # tails /version forever (Ctrl+C to stop)
    ```
 
-   Smoke-test it now — **before** Demo 3 merges the PR, this should print
-   `(no response)` (or whatever `/version` did before the fix). After Demo 4
-   deploys, the same loop starts printing the new SHA. That contrast is the
-   punchline. The script auto-resolves `AZURE_RESOURCE_GROUP` and the API
-   container app name from the current azd env — nothing to remember on stage.
+   Smoke-test it now — **before** Demo 3 merges the PR, the loop prints the
+   currently-deployed SHA (or `(no response)` if `/version` doesn't exist yet
+   in main). After Demo 4 deploys, the same loop starts printing the new SHA.
+   That contrast is the punchline. The script auto-resolves
+   `AZURE_RESOURCE_GROUP` and the API container app name from the current azd
+   env — nothing to remember on stage.
+
+   **After the recording**, restore internal ingress:
+
+   ```bash
+   ./demo4-ingress-internal.sh
+   ```
 9. Provision **Azure SRE Agent** for Demo 6 (one-time, not in Bicep — it's a
    tenant-level resource, typically one per team/subscription).
    - Portal → *Create a resource* → search **Azure SRE Agent** → create in the

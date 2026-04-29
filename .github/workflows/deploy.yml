@@ -53,6 +53,8 @@ jobs:
         run: azd up --no-prompt
         env:
           AZURE_ENV_NAME: ${{ env.AZURE_ENV_NAME }}
+          GIT_SHA: ${{ github.sha }}
+          BUILT_AT: ${{ github.event.head_commit.timestamp }}
 
       - name: Print frontend URL
         run: |

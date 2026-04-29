@@ -10,6 +10,9 @@ services:
     docker:
       path: ../../apps/api/Dockerfile
       context: ../..
+      buildArgs:
+        - "GIT_SHA=${GIT_SHA:=dev}"
+        - "BUILT_AT=${BUILT_AT:=unknown}"
   tools:
     project: ./apps/tools
     language: python
