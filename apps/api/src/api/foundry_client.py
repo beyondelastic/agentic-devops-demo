@@ -80,7 +80,7 @@ async def stream_chat(user_message: str, settings: Settings | None = None) -> As
         stream = await asyncio.wait_for(
             loop.run_in_executor(None, _start_stream), timeout=20.0
         )
-    except asyncio.TimeoutError:
+    except TimeoutError:
         log.error("Foundry responses.create timed out after 20s")
         yield (
             f"⚠️  The Foundry agent **'{settings.foundry_agent_name}'** did not respond "
