@@ -1,0 +1,10 @@
+{
+  "python.analysis.extraPaths": [
+    "apps/api/src",
+    "apps/tools/src"
+  ],
+  "python.analysis.include": [
+    "apps/api/src",
+    "apps/tools/src"
+  ]
+}
