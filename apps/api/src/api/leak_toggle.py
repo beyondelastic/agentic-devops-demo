@@ -16,12 +16,14 @@ log = logging.getLogger("api.leak")
 # Module-level list — leaks survive across requests within a worker.
 _LEAK_BUFFER: list[bytes] = []
 _CHUNK_SIZE = 20 * 1024 * 1024  # 20 MB
+_CHUNKS_PER_CALL = 5  # 100 MB per request — OOMs a 0.5Gi replica in ~5 calls
 
 
 def maybe_leak(enabled: bool) -> None:
     if not enabled:
         return
-    _LEAK_BUFFER.append(b"x" * _CHUNK_SIZE)
+    for _ in range(_CHUNKS_PER_CALL):
+        _LEAK_BUFFER.append(b"x" * _CHUNK_SIZE)
     if len(_LEAK_BUFFER) % 5 == 0:
         log.warning(
             "[demo-leak] buffer holds %d chunks (~%d MB)",
