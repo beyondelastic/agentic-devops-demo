@@ -23,7 +23,7 @@ spec:
       serviceAccountName: trial-matcher
       containers:
         - name: {{ $svc }}
-          image: "{{ $.Values.image.registry }}/{{ $svc }}:{{ $.Values.image.tag }}"
+          image: "{{ $.Values.image.registry }}/agentic-devops-demo/{{ $svc }}-demo:{{ $.Values.image.tag }}"
           imagePullPolicy: {{ $.Values.image.pullPolicy }}
           ports:
             - name: http
