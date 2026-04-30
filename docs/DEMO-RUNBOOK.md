@@ -239,7 +239,29 @@ Copilot UX.
       ~~~markdown
       - When you mention a specific trial, end the response with a single-line italic disclaimer: *Informational only — eligibility must be confirmed by the trial site.*
       ~~~
-   3. Commit and push on a branch, open the PR, merge to `main`:
+   3. **Reconcile the change into Foundry (~5s).** This calls the *same*
+      [infra/scripts/sync_agent.py](../infra/scripts/sync_agent.py) that the
+      `azd postdeploy` hook runs in CI — just locally and without waiting on
+      the pipeline. First run takes ~20s while it builds a venv; subsequent
+      runs are ~5s.
+      ```bash
+      ./demo2-sync.sh
+      ```
+      Watch for the final line: `Created agent version: name=clinical-trial-matcher version=N`.
+
+   4. Refresh the agent in the Foundry/AI Toolkit extension — the version list
+      ticks up by one. Ask the running app the *same* question again. The
+      answer now goes straight to trial cards and ends with the disclaimer.
+      **No portal clicks.**
+
+   *(Stage line as the new behaviour appears: "Two product asks — 'don't gate
+   answers behind demographics' and 'add a clinical disclaimer.' In a portal,
+   that's a meeting and a ticket. Here, it's a PR.")*
+
+   5. **Optional — close the GitOps loop after the live demo.** Commit the
+      same file change, push, merge. CI re-runs `sync_agent.py`, producing
+      one more version. You don't need this on stage; it's the proof point
+      for "the local script and the CI pipeline run identical code."
       ```bash
       git checkout -b demo2-prompt-update
       git add .foundry/prompts/system.md
@@ -247,29 +269,6 @@ Copilot UX.
       git push -u origin demo2-prompt-update
       gh pr create --fill --base main && gh pr merge --squash --auto
       ```
-   4. While `deploy.yml` runs (~5–8 min), narrate steps 1–3 above. The
-      `azd postdeploy` hook calls
-      [infra/scripts/sync_agent.py](../infra/scripts/sync_agent.py) which calls
-      `client.agents.create_version(...)` — that's where the new version is
-      born.
-   5. When CI finishes: refresh the agent in the Foundry/AI Toolkit extension
-      (the version list ticks up by one), then ask the running app the *same*
-      question again. The answer now goes straight to trial cards and ends with
-      the disclaimer. **No portal clicks.**
-
-   *(Stage line as the new behaviour appears: "Two product asks — 'don't gate
-   answers behind demographics' and 'add a clinical disclaimer.' In a portal,
-   that's a meeting and a ticket. Here, it's a PR.")*
-
-   **Fallback if CI is slow / flaky on the day:** run the same script locally
-   for the same effect (just without the GitOps story):
-   ```bash
-   eval "$(azd env get-values | sed 's/^/export /')"
-   python3 -m venv /tmp/foundry-venv
-   /tmp/foundry-venv/bin/pip install -q azure-ai-projects==2.1.0 \
-     azure-identity==1.19.0 pyyaml==6.0.2
-   /tmp/foundry-venv/bin/python infra/scripts/sync_agent.py
-   ```
 
 5. Make the limitation explicit, then turn it into the punchline:
 
