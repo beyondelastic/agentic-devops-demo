@@ -39,10 +39,10 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Get AKS credentials
-        run: |
-          az aks get-credentials \
-            -g "$AKS_RESOURCE_GROUP" -n "$AKS_CLUSTER_NAME" \
-            --overwrite-existing
+        uses: azure/aks-set-context@v4
+        with:
+          resource-group: ${{ env.AKS_RESOURCE_GROUP }}
+          cluster-name: ${{ env.AKS_CLUSTER_NAME }}
 
       - name: Helm upgrade --install
         run: |
