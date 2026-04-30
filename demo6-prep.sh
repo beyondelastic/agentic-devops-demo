@@ -18,9 +18,9 @@ source "$SCRIPT_DIR/demo6-env.sh"
 echo "==> Capping max-replicas to 2 on $API_NAME ..."
 az containerapp update -g "$RG" -n "$API_NAME" --max-replicas 2 -o none
 
-echo "==> Tightening memory limit to 0.5Gi so the leak trips OOM faster (cpu stays 0.5)..."
-echo "    Default is 1Gi; demo6-fix.sh restores it."
-az containerapp update -g "$RG" -n "$API_NAME" --cpu 0.5 --memory 0.5Gi -o none
+echo "==> Tightening replicas to the smallest ACA Consumption combo (0.25 cpu / 0.5Gi)..."
+echo "    Default is 0.5 cpu / 1Gi; demo6-fix.sh restores it."
+az containerapp update -g "$RG" -n "$API_NAME" --cpu 0.25 --memory 0.5Gi -o none
 
 echo "==> Waiting for the new revision to become Active..."
 for i in {1..30}; do
