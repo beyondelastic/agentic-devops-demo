@@ -19,6 +19,7 @@ spec:
       labels:
         {{- include "trial-matcher.labels" $ | nindent 8 }}
         app: {{ $svc }}
+        azure.workload.identity/use: "true"
     spec:
       serviceAccountName: trial-matcher
       containers:
@@ -47,7 +48,9 @@ spec:
             {{- end }}
             {{- if eq $svc "frontend" }}
             - name: API_HOST
-              value: "api"
+              value: "api:8000"
+            - name: API_SCHEME
+              value: "http"
             {{- end }}
           readinessProbe:
             httpGet:

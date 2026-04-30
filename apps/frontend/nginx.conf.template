@@ -10,11 +10,12 @@ server {
         try_files $uri $uri/ /index.html;
     }
 
-    # Reverse proxy to API service. In Container Apps, ${API_HOST} is the internal FQDN
-    # of the api app (set at container start via envsubst). Internal ingress
-    # listens on 80/443 — not on the container's targetPort.
+    # Reverse proxy to API service. ${API_HOST} is the API hostname (in ACA the
+    # internal ingress FQDN; in AKS the in-cluster Service name like `api`).
+    # ${API_SCHEME} is `https` for ACA internal ingress and `http` for plain
+    # in-cluster Services on AKS.
     location /api/ {
-        proxy_pass https://${API_HOST}/api/;
+        proxy_pass ${API_SCHEME}://${API_HOST}/api/;
         proxy_ssl_server_name on;
         proxy_http_version 1.1;
         proxy_set_header Host ${API_HOST};

@@ -120,10 +120,23 @@
       helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
       helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
         --namespace ingress-nginx --create-namespace \
-        --set controller.service.type=LoadBalancer
+        --set controller.service.type=LoadBalancer \
+        --set controller.service.externalTrafficPolicy=Local
       kubectl -n ingress-nginx get svc ingress-nginx-controller \
-        -w   # wait for EXTERNAL-IP, then point DNS / use sslip.io
+        -w   # wait for EXTERNAL-IP, then use nip.io / sslip.io
       ```
+
+      > **Why `externalTrafficPolicy=Local`?** With the default `Cluster`
+      > policy, the Azure LB health probe hits the controller's nodePort at
+      > `/`, gets a 404 from nginx, and marks every backend unhealthy — so
+      > external traffic times out even though pods are Running. `Local`
+      > makes AKS provision a dedicated `/healthz` probe (and preserves
+      > client source IPs as a bonus). If you forget this on a fresh
+      > install, patch the running Service:
+      > ```bash
+      > kubectl -n ingress-nginx patch svc ingress-nginx-controller \
+      >   -p '{"spec":{"externalTrafficPolicy":"Local"}}'
+      > ```
    4. Set the GitHub repo **Variables** (Settings → Secrets and variables →
       Actions → Variables) consumed by `aks-deploy.yml`:
       - `AKS_RESOURCE_GROUP` = `$AZURE_RESOURCE_GROUP`
@@ -338,7 +351,11 @@ Substitute `<rg>`, `<api>`, and `<rev>` with the values from `azd env get-values
    ```bash
    kubectl --context <aks-ctx> get pods,svc,ingress -n trial-matcher
    ```
-4. Hit the AKS ingress URL — same UX, different runtime.
+4. Hit the AKS ingress URL — same UX, different runtime. The host is whatever
+   you set `INGRESS_HOST` to (e.g. `http://<lb-ip>.nip.io/`). If the page
+   times out from your laptop while pods are Running, the ingress controller
+   probe is failing — see the `externalTrafficPolicy=Local` note in the
+   pre-show setup.
 
 **Closing line:** "ACA for the fastest path. AKS when you need the ceiling. The same containers, the same pipeline, the same agent."
 

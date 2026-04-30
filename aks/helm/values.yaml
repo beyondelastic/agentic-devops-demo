@@ -1,7 +1,7 @@
 image:
   registry: ""               # ACR login server, e.g. mydemo.azurecr.io
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 # Workload identity client id (federated to AKS workload identity).
 azureClientId: ""
