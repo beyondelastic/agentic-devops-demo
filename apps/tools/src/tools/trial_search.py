@@ -94,14 +94,42 @@ def _to_summary(trial: Trial) -> TrialSummary:
     )
 
 
+# Words to drop from the condition keyword before matching. The agent often
+# extracts phrases like "stage 2 lung cancer" or "advanced melanoma"; the
+# dataset uses canonical names ("Non-Small Cell Lung Cancer", "Melanoma"),
+# so a plain substring match misses. We tokenize and require that *any*
+# remaining token appears in the trial's condition+title.
+_STOPWORDS = {
+    "a", "an", "and", "the", "of", "with", "for",
+    "stage", "phase", "grade", "early", "late", "advanced", "metastatic",
+    "recurrent", "chronic", "acute", "severe", "mild", "moderate",
+    "i", "ii", "iii", "iv", "1", "2", "3", "4",
+    "cancer", "disease", "syndrome", "disorder",
+}
+
+
+def _condition_tokens(condition: str) -> list[str]:
+    """Split a free-text condition keyword into match tokens.
+
+    Drops stopwords (stage/phase qualifiers, generic terms like 'cancer').
+    Falls back to the original phrase if every token is a stopword, so e.g.
+    'cancer' alone still matches against the canonical condition strings.
+    """
+    raw = [t for t in condition.replace("-", " ").split() if t]
+    tokens = [t for t in raw if t not in _STOPWORDS]
+    return tokens or raw
+
+
 def search_trials(trials: list[Trial], req: SearchRequest) -> SearchResponse:
     matches: list[Trial] = []
     cond = (req.condition or "").lower().strip()
+    cond_tokens = _condition_tokens(cond) if cond else []
     loc = (req.location or "").lower().strip()
     phase = (req.phase or "").lower().strip()
 
     for t in trials:
-        if cond and cond not in t.condition.lower() and cond not in t.title.lower():
+        haystack = f"{t.condition} {t.title}".lower()
+        if cond_tokens and not any(tok in haystack for tok in cond_tokens):
             continue
         if loc and loc not in t.location.lower():
             continue

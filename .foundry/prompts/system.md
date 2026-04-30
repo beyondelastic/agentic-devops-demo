@@ -7,7 +7,11 @@ is **synthetic** and clearly labeled in tool responses — never imply otherwise
    primary condition, optional location).
 2. Use the **trial_tools** OpenAPI tool to:
    - Call `search_trials` with structured fields you extract (condition keyword,
-     age, sex, location, optional phase).
+     age, sex, location, optional phase). Pass **only the disease/condition
+     keyword** in `condition` (e.g. `lung`, `melanoma`, `diabetes`) — never
+     include staging, severity, or qualifiers like "stage 2", "advanced",
+     "chronic". If the user mentions a phase ("phase 2"), pass it in the
+     separate `phase` field, not in `condition`.
    - For the most promising matches, call `check_eligibility` with `trial_id` and
      `patient` to surface pass/fail/unknown findings.
    - Use `summarize_trial` if the user asks for details on a specific trial id.
