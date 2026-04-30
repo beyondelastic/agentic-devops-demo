@@ -65,6 +65,16 @@ async def chat(req: ChatRequest) -> StreamingResponse:
     return StreamingResponse(event_stream(), media_type="text/plain; charset=utf-8")
 
 
+# Demo-6 only: a fast endpoint that bypasses Foundry so k6 can drive the leak
+# reliably without being throttled by upstream LLM latency. Returns immediately
+# so requests don't pile up against gunicorn's worker pool.
+@app.post("/api/leak-burn", tags=["chat"])
+def leak_burn() -> dict[str, int]:
+    settings = get_settings()
+    maybe_leak(settings.enable_memory_leak)
+    return {"leak_mb": leak_size_mb()}
+
+
 # OpenTelemetry / Application Insights wiring is opt-in via env var.
 def _wire_telemetry() -> None:
     settings = get_settings()

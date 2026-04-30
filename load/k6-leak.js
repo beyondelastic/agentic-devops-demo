@@ -48,13 +48,12 @@ const SAMPLE_PROFILES = [
 ];
 
 export default function () {
-  const profile = SAMPLE_PROFILES[Math.floor(Math.random() * SAMPLE_PROFILES.length)];
-  const payload = JSON.stringify({
-    message: `${profile}. What trials might I qualify for?`,
-  });
-  const res = http.post(`${API_BASE}/api/chat`, payload, {
+  // Demo-6 fast path: hits a no-op endpoint that just calls maybe_leak() and
+  // returns immediately. Bypasses Foundry/streaming so every request reliably
+  // adds memory and the OOM is visible within ~30s.
+  const res = http.post(`${API_BASE}/api/leak-burn`, "{}", {
     headers: { "Content-Type": "application/json" },
-    timeout: "30s",
+    timeout: "8s",
   });
   check(res, {
     "status 200": (r) => r.status === 200,

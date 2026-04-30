@@ -261,10 +261,18 @@ Substitute `<rg>`, `<api>`, and `<rev>` with the values from `azd env get-values
 (e.g. `rg-aullah-agentic-devops`, `adgd-api-3wnyg3nk2w76m`,
 `adgd-api-3wnyg3nk2w76m--0000003`).
 
-> All four shell scripts auto-resolve `RG` / `API_NAME` / `FRONTEND_URL` from
+> All shell scripts auto-resolve `RG` / `API_NAME` / `FRONTEND_URL` from
 > `azd env get-values` via [demo6-env.sh](../demo6-env.sh) — no copy/pasting
 > resource names mid-demo.
 
+0. **Prep (run ~2 min before the recording, NOT during)** — caps the API to
+   `maxReplicas=2` and waits for the new revision to become Active and the
+   replica count to settle. Without this, `demo6.sh`'s load briefly runs
+   against the old config (maxReplicas=10) and the OOM signal hides in the
+   per-replica average:
+   ```bash
+   ./demo6-prep.sh
+   ```
 1. **Replica churn** — names rotate and `created` timestamps reset on every
    OOMKill, even though the count stays at N/N. In its own pane:
    ```bash
@@ -294,8 +302,9 @@ Substitute `<rg>`, `<api>`, and `<rev>` with the values from `azd env get-values
 
 ### Demo flow
 
-1. **Kick off the leak scenario** — caps `--max-replicas 2`, sets
-   `ENABLE_MEMORY_LEAK=true`, then runs `k6 run load/k6-leak.js` for 10 min:
+1. **Kick off the leak scenario** — sets `ENABLE_MEMORY_LEAK=true`, then runs
+   `k6 run load/k6-leak.js` for 10 min. Assumes `./demo6-prep.sh` has already
+   capped `maxReplicas=2` (it sanity-checks this and warns if not):
    ```bash
    ./demo6.sh
    ```
