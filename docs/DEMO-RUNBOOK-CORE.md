@@ -1,44 +1,24 @@
-# Demo runbook — "Powering AI Apps and Agents at Scale with Azure App Platform"
+# Demo runbook (core) — Demos 2, 5, 7
 
-> Copy/paste-ready presenter script for Demos 1–7. Resource names assume
-> `AZURE_ENV_NAME=demo` in the eastus2 region. Substitute the values printed
-> by `azd env get-values` after the first `azd up`.
->
-> Looking for just Demos 2, 5, 7? Use [DEMO-RUNBOOK-CORE.md](DEMO-RUNBOOK-CORE.md).
+> Slim presenter script focused on the three demos that show off the
+> "agent-as-code → ACA scale → AKS-shaped workload" arc. Demos 1, 3, 4, 6 are
+> documented in the [full runbook](DEMO-RUNBOOK.md) and treated as optional
+> here.
 
-## Pre-show
+## Before you start
 
-All one-time setup (auth, `azd up`, GitHub issue, OIDC, Foundry extension,
-SRE Agent, AKS + KAITO + ingress) lives in **[PRE-SHOW.md](PRE-SHOW.md)**.
-Each step there is annotated with which demo needs it; for the full runbook
-you need every step.
+Run through [PRE-SHOW.md](PRE-SHOW.md). For this slim runbook you need:
 
----
+| Pre-show step | Why |
+|---|---|
+| 1. Authenticate | all demos |
+| 2. `azd up` (ACA stack) | Demo 2 + Demo 5 |
+| 4. GitHub OIDC + repo secrets | Demo 7's `aks-deploy.yml` |
+| 5. Foundry / AI Toolkit VS Code extension | Demo 2 |
+| 6. *(Optional)* Warm Foundry | Demo 2 |
+| 9. AKS cluster + KAITO + ingress + repo Variables | Demo 7 |
 
-## Demo 1 — GitHub Copilot (VS Code, agent mode) generates `lint.yml` (≈2 min)
-
-1. In VS Code, open the Copilot Chat side panel and switch the mode dropdown
-   to **Agent**. Confirm the workspace is `agentic-devops-demo` so the agent
-   can read/write files directly.
-2. Send this prompt:
-   ```
-   Create a GitHub Actions workflow at .github/workflows/lint.yml that runs ruff
-   on apps/api and apps/tools on PRs to main. Use Python 3.12, matrix over the
-   two services, and pip install -e .[dev] inside each service directory.
-   ```
-3. Watch the agent create `.github/workflows/lint.yml` in the editor. Accept
-   the change, then commit and push from the integrated terminal:
-   ```bash
-   git add .github/workflows/lint.yml
-   git commit -m "ci: add lint workflow"
-   git push
-   ```
-4. Open the PR check tab on GitHub — green.
-
-**Why this is safe:** purely additive; nothing else depends on this workflow.
-**Why agent mode (not chat):** zero copy/paste — the agent writes the file,
-runs the commit, and you narrate. Faster on stage and shows off the newer
-Copilot UX.
+You can skip pre-show steps 3, 7, 8 (they're for the optional Demos 3, 4, 6).
 
 ---
 
@@ -136,8 +116,8 @@ Copilot UX.
 
    > "The extension can't *author* the OpenAPI tool wiring — there's no picker for
    > it today. That's fine. **I don't want my agents authored in a UI anyway.**
-   > Demo 4 will show this YAML get reconciled by GitHub Actions on every PR
-   > merge — same pipeline as the rest of the app."
+   > Every PR merge runs the same `sync_agent.py` in GitHub Actions —
+   > the agent gets the same pipeline as the rest of the app."
 
 **Narrative beat:** "Low-code is great for exploration. Production demands a Git
 SHA, a pipeline, and a reproducible deploy. The agent gets the same treatment as
@@ -145,36 +125,7 @@ the API container."
 
 ---
 
-## Demo 3 — GitHub Coding Agent fixes the `/version` issue (≈3 min)
-
-1. Open the pre-staged issue. Assign to **Copilot**.
-2. Switch to a different slide while the agent works (~2–3 min).
-3. Return; review the PR; merge.
-
----
-
-## Demo 4 — GitHub Actions deploys to Azure Container Apps (≈3 min)
-
-The merge in Demo 3 triggered `deploy.yml`. While it runs:
-
-1. Open the Actions tab. Walk through the steps:
-   - OIDC login (no secrets, federated credential).
-   - `azd up` (idempotent — Bicep is a no-op on already-provisioned resources).
-   - **Postdeploy hook** runs `infra/scripts/sync_agent.py` which calls
-     `AIProjectClient.agents.create_version` to upsert the agent from the
-     committed `.foundry/agent-metadata.yaml`.
-2. When green, hit the frontend URL. Send a real chat — agent responds via Foundry.
-3. Show the new `/version` endpoint via the watch loop staged in pre-show
-   step 7 (already running in a side terminal):
-   ```bash
-   ./demo4-version-watch.sh
-   ```
-   The `git_sha` it prints flips from `(no response)` to the merge commit
-   from Demo 3 — proof, not promises.
-
----
-
-## Demo 5 (optional) — ACA scales under load (≈4 min)
+## Demo 5 — ACA scales under load (≈4 min)
 
 1. Show current replicas:
    ```bash
@@ -186,86 +137,6 @@ The merge in Demo 3 triggered `deploy.yml`. While it runs:
    ```
 3. Re-run `replica list` every 30s. Watch count grow → 10 → settle back to 1.
 4. Show the Container App **Metrics** blade: Replica Count + Requests.
-
----
-
-## Demo 6 — Azure SRE Agent diagnoses a memory leak (≈6 min)
-
-> **Why pre-stage terminals?** ACA auto-replaces OOM'd replicas, so the portal's
-> *Replicas* blade almost always shows N/N healthy — there's no `RESTARTS`
-> counter like `kubectl get pods`. Pre-stage these so the failure is *visible*.
-
-### Pre-stage terminals (open before the demo, split-screen on stage)
-
-Substitute `<rg>`, `<api>`, and `<rev>` with the values from `azd env get-values`
-(e.g. `rg-aullah-agentic-devops`, `adgd-api-3wnyg3nk2w76m`,
-`adgd-api-3wnyg3nk2w76m--0000003`).
-
-> All shell scripts auto-resolve `RG` / `API_NAME` / `FRONTEND_URL` from
-> `azd env get-values` via [demo6-env.sh](../demo6-env.sh) — no copy/pasting
-> resource names mid-demo.
-
-0. **Prep (run ~2 min before the recording, NOT during)** — caps the API to
-   `maxReplicas=2` and waits for the new revision to become Active and the
-   replica count to settle. Without this, `demo6.sh`'s load briefly runs
-   against the old config (maxReplicas=10) and the OOM signal hides in the
-   per-replica average:
-   ```bash
-   ./demo6-prep.sh
-   ```
-1. **Replica churn** — names rotate and `created` timestamps reset on every
-   OOMKill, even though the count stays at N/N. In its own pane:
-   ```bash
-   ./demo6-watch.sh
-   ```
-2. **System log stream** — the crispest "things are dying" signal; you'll see
-   `OOMKilled` and `Replica … has been provisioned` lines scroll by. In its own
-   pane:
-   ```bash
-   ./demo6-logs.sh
-   ```
-3. **Container App → Metrics blade** — pin three on one chart, last 30 min:
-   - **Replica Restart Count** (step-increments on every OOMKill — the money
-     graph for the audience)
-   - **Memory Working Set Bytes**, split by Replica (sawtooth = leak + restart)
-   - **Replica Count**
-4. *(Optional)* **Log Analytics → Logs blade**, pre-loaded with this query so
-   you can hit *Run* live:
-   ```kusto
-   ContainerAppSystemLogs_CL
-   | where ContainerAppName_s == "<api>"
-   | where TimeGenerated > ago(15m)
-   | where Reason_s in ("OOMKilled", "BackOff", "Unhealthy", "Killing")
-   | project TimeGenerated, ReplicaName_s, Reason_s, Log_s
-   | order by TimeGenerated desc
-   ```
-
-### Demo flow
-
-1. **Kick off the leak scenario** — sets `ENABLE_MEMORY_LEAK=true`, then runs
-   `k6 run load/k6-leak.js` for 10 min. Assumes `./demo6-prep.sh` has already
-   capped `maxReplicas=2` (it sanity-checks this and warns if not):
-   ```bash
-   ./demo6.sh
-   ```
-   Within 1–2 min the pre-staged terminals (`./demo6-watch.sh` and
-   `./demo6-logs.sh`) will start showing OOMKills, replica churn, and the
-   Replica Restart Count metric stepping up.
-2. After ~3 min, show the unhealthy revision:
-   ```bash
-   az containerapp revision show -g <rg> -n adgd-api-<token> --revision <rev> -o jsonc
-   ```
-3. Open **Azure SRE Agent** scoped to the resource group. Ask it to investigate
-   the API container app. It should surface:
-   - Restart loop on the API revision.
-   - Memory growth pattern (the `[demo-leak] buffer holds N chunks` warnings).
-   - Correlated env-var change (`ENABLE_MEMORY_LEAK=true`).
-   - Recommend rolling back the env var.
-4. **Apply the fix** — disables the leak and restores `--max-replicas 5`:
-   ```bash
-   ./demo6-fix.sh
-   ```
-5. Watch healthy replicas come back up in the `./demo6-watch.sh` pane.
 
 ---
 
@@ -337,9 +208,9 @@ The three demo seeds (`demo-w1/w2/w3`) are re-created by the watcher on next sta
 ## Reset between rehearsals
 
 ```bash
-# Disable the leak and restore max-replicas in one shot:
-./demo6-fix.sh
-
-# Clean teardown:
+# Clean teardown of the ACA stack (keeps AKS untouched):
 azd down --purge --force
 ```
+
+For Demo 7, use the Trial Watch reset block above instead of full teardown
+between back-to-back rehearsals.

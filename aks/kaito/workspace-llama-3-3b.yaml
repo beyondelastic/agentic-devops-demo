@@ -1,0 +1,41 @@
+apiVersion: kaito.sh/v1beta1
+kind: Workspace
+metadata:
+  name: workspace-llama-3-3b
+  namespace: trial-matcher
+resource:
+  count: 1
+  labelSelector:
+    matchLabels:
+      apps: llama-3-3b
+inference:
+  template:
+    spec:
+      containers:
+        - name: llama
+          image: ghcr.io/kaito-project/aikit/llama3.2:3b
+          args:
+            - "run"
+            - "--address=:5000"
+          ports:
+            - containerPort: 5000
+              name: http
+          resources:
+            requests:
+              cpu: "1"
+              memory: "5Gi"
+            limits:
+              memory: "8Gi"
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /readyz
+              port: 5000
+            initialDelaySeconds: 120
+            periodSeconds: 30

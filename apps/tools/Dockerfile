@@ -36,4 +36,7 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz').status==200 else 1)" || exit 1
 
-CMD ["gunicorn", "tools.main:app", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8000", "--workers", "2", "--access-logfile", "-"]
+# --workers 1 so demo-injected trials (in-memory app.state) are visible to
+# every request. With multiple workers, only the worker that handled the
+# POST /admin/trials would see the new entry.
+CMD ["gunicorn", "tools.main:app", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8000", "--workers", "1", "--access-logfile", "-"]

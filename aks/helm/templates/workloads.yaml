@@ -43,6 +43,10 @@ spec:
               value: {{ $.Values.foundry.modelDeploymentName | quote }}
             - name: TOOLS_SERVICE_URL
               value: "http://tools:8000"
+            - name: TOOLS_API_KEY
+              value: "demo-key"
+            - name: REDIS_URL
+              value: "redis://redis:6379/0"
             - name: AZURE_CLIENT_ID
               value: {{ $.Values.azureClientId | quote }}
             {{- end }}

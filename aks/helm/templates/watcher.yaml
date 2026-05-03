@@ -1,0 +1,52 @@
+{{- /*
+The watcher runs a periodic loop scoring saved patient profiles against
+clinical trials using the in-cluster small model (KAITO Workspace).
+Step 2 scaffold: hardcoded watches via WATCHES_JSON; replaced by Redis-backed
+watches in step 3.
+*/ -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: watcher
+  labels:
+    {{- include "trial-matcher.labels" . | nindent 4 }}
+    component: watcher
+spec:
+  replicas: 1                    # singleton; no leader election yet
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: watcher
+  template:
+    metadata:
+      labels:
+        {{- include "trial-matcher.labels" . | nindent 8 }}
+        app: watcher
+    spec:
+      serviceAccountName: trial-matcher
+      containers:
+        - name: watcher
+          image: "{{ .Values.image.registry }}/agentic-devops-demo/watcher-demo:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+              value: {{ .Values.appInsights.connectionString | quote }}
+            - name: TOOLS_SERVICE_URL
+              value: "http://tools:8000"
+            - name: TOOLS_API_KEY
+              value: "demo-key"
+            - name: REDIS_URL
+              value: "redis://redis:6379/0"
+            - name: LOCAL_MODEL_URL
+              value: {{ .Values.watcher.localModelUrl | quote }}
+            - name: LOCAL_MODEL_NAME
+              value: {{ .Values.watcher.localModelName | quote }}
+            - name: WATCHER_TICK_SECONDS
+              value: {{ .Values.watcher.tickSeconds | quote }}
+            - name: WATCHER_MAX_TRIALS
+              value: {{ .Values.watcher.maxTrials | quote }}
+            - name: LOG_LEVEL
+              value: {{ .Values.watcher.logLevel | quote }}
+          resources:
+            {{- toYaml .Values.resources.watcher | nindent 12 }}
