@@ -45,7 +45,7 @@ class SearchRequest(BaseModel):
     def _coerce_phase(cls, v):  # noqa: ANN001
         if v is None:
             return None
-        if isinstance(v, (int, float)):
+        if isinstance(v, (int | float)):
             return f"Phase {int(v)}"
         s = str(v).strip()
         if not s:

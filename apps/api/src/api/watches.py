@@ -12,8 +12,9 @@ import json
 import logging
 import os
 import uuid
-from datetime import datetime, timezone
-from typing import Any, AsyncIterator
+from collections.abc import AsyncIterator
+from datetime import UTC, datetime
+from typing import Any
 
 import redis.asyncio as redis
 from fastapi import APIRouter, HTTPException, Request
@@ -26,7 +27,7 @@ WATCHES_KEY = "watches"
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+    return datetime.now(UTC).isoformat(timespec="seconds")
 
 
 def _redis_url() -> str:

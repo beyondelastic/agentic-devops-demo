@@ -51,7 +51,7 @@ async def add_trial(req: NewTrial) -> dict:
             )
         except httpx.HTTPError as exc:
             log.warning("tools admin call failed: %s", exc)
-            raise HTTPException(status_code=502, detail=f"tools unreachable: {exc}")
+            raise HTTPException(status_code=502, detail=f"tools unreachable: {exc}") from exc
     if r.status_code >= 400:
         raise HTTPException(status_code=r.status_code, detail=r.text)
     log.info("added trial via tools admin: %s", r.json())

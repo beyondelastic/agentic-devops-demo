@@ -20,9 +20,12 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .eligibility import EligibilityRequest, EligibilityResponse, check_eligibility
 from .trial_search import (
+    NewTrialRequest,
     SearchRequest,
     SearchResponse,
+    Trial,
     TrialSummary,
+    _to_summary,
     load_trials,
     search_trials,
     summarize_trial,
@@ -158,8 +161,6 @@ def summarize_trial_endpoint(trial_id: str) -> TrialSummary:
 # Lets the UI inject new synthetic trials so the watcher's next tick picks
 # them up and emits NEW pills. Not part of the Foundry tool surface.
 
-from .trial_search import Trial, NewTrialRequest  # noqa: E402
-
 
 @app.post(
     "/admin/trials",
@@ -169,7 +170,6 @@ from .trial_search import Trial, NewTrialRequest  # noqa: E402
 )
 def add_trial_endpoint(req: NewTrialRequest) -> TrialSummary:
     import uuid as _uuid
-    from .trial_search import _to_summary
 
     existing_ids = {t.id for t in app.state.trials}
     new_id = req.id or f"TM-DEMO-{_uuid.uuid4().hex[:6].upper()}"
@@ -189,5 +189,10 @@ def add_trial_endpoint(req: NewTrialRequest) -> TrialSummary:
         exclusion_criteria=req.exclusion_criteria or [],
     )
     app.state.trials.append(trial)
-    log.info("admin: added trial id=%s title=%r (total=%d)", trial.id, trial.title, len(app.state.trials))
+    log.info(
+        "admin: added trial id=%s title=%r (total=%d)",
+        trial.id,
+        trial.title,
+        len(app.state.trials),
+    )
     return _to_summary(trial)
