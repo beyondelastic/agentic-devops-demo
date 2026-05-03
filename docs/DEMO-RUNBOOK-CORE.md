@@ -182,7 +182,13 @@ Flow: `POST /api/watches` → Redis → watcher tick reads watches → `tools` s
    - flash an indigo pulse border (recent-update animation),
    - gain a `1 NEW` aggregate badge in the header,
    - show the new trial result with a `NEW` pill and an emerald score badge (**≈80–100, "Strong match"** — the watcher pre-computes age/sex/location verdicts in Python and feeds them to the 3B model as ground truth, then floors the score at 80 when every hard check passes).
-   If the score later changes on a subsequent tick, a `▲N` / `▼N` delta badge appears.
+
+   *Optional bonus — `▲N` / `▼N` delta badge.* Scoring is deterministic
+   (temperature 0 + hard-fact clamping), so scores don't drift across ticks.
+   To force a delta on stage, edit a watch profile (e.g. change Aunt Helen's
+   age to 30) — next tick re-scores existing trials, the location/age
+   verdicts flip, and the rose-coloured `▼N` badge shows up next to the
+   affected score.
 5. **Closing line:** "Same containers, same pipeline, same agent — plus a stateful inference loop and an open-source model that lives inside the cluster. ACA for the fastest path. AKS when you need the ceiling."
 
 ### If something goes sideways

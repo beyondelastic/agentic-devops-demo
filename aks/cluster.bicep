@@ -33,6 +33,9 @@ resource aks 'Microsoft.ContainerService/managedClusters@2024-05-01' = {
         vmSize: 'Standard_D4s_v5'
         osType: 'Linux'
         type: 'VirtualMachineScaleSets'
+        nodeLabels: {
+          apps: 'llama-3-3b'
+        }
       }
     ]
     networkProfile: {

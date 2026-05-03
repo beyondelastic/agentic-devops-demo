@@ -176,13 +176,21 @@ helm install kaito-workspace /tmp/kaito-src/charts/kaito/workspace \
   --set featureGates.disableNodeAutoProvisioning=true \
   --set nvidiaDevicePlugin.enabled=false
 
-# Label one node for the model pod, then create the Workspace CR.
-NODE=$(kubectl get nodes -l 'kubernetes.azure.com/agentpool=sys' \
-  -o jsonpath='{.items[0].metadata.name}')
-kubectl label node "$NODE" apps=llama-3-3b --overwrite
+# The sys nodepool VMSS is labeled apps=llama-3-3b at creation time
+# (see aks/cluster.bicep / `az aks nodepool update --labels`), so the
+# label survives reimage and we don't need to relabel by hand. Just
+# create the Workspace CR — KAITO finds a matching node automatically.
 kubectl apply -f aks/kaito/workspace-llama-3-3b.yaml
 kubectl wait --for=condition=Ready workspace/workspace-llama-3-3b --timeout=15m
 ```
+
+> **One-time bootstrap on a fresh cluster** (skip if the sys pool already
+> carries `apps=llama-3-3b` — check with `kubectl get nodes --show-labels | grep apps=`):
+>
+> ```bash
+> az aks nodepool update -g "$AZURE_RESOURCE_GROUP" --cluster-name "$AKS_NAME" \
+>   -n sys --labels apps=llama-3-3b
+> ```
 
 ### 9.3 Install an ingress controller
 
