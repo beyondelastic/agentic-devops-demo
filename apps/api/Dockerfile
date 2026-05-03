@@ -19,6 +19,7 @@ RUN pip install --upgrade pip && \
       "azure-identity==1.19.0" \
       "openai==2.32.0" \
       "httpx==0.27.2" \
+      "redis==5.2.0" \
       "opentelemetry-api==1.28.2" \
       "opentelemetry-sdk==1.28.2" \
       "opentelemetry-instrumentation-fastapi==0.49b2" \

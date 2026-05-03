@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react";
+import WatchPanel from "./WatchPanel";
 
 type Profile = {
   id: string;
@@ -116,6 +117,7 @@ export default function App() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
+  const [tab, setTab] = useState<"chat" | "watch">("chat");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const profile = useMemo<Profile>(() => {
@@ -213,8 +215,21 @@ export default function App() {
             <span className="hidden md:inline opacity-70">Synthetic data only</span>
           </div>
         </div>
+        <div className="mt-3 flex gap-1">
+          <TabButton active={tab === "chat"} onClick={() => setTab("chat")}>
+            💬 Chat
+          </TabButton>
+          <TabButton active={tab === "watch"} onClick={() => setTab("watch")}>
+            🔭 Trial Watch
+          </TabButton>
+        </div>
       </header>
 
+      {tab === "watch" ? (
+        <div className="flex-1 overflow-hidden">
+          <WatchPanel />
+        </div>
+      ) : (
       <div className="flex flex-1 overflow-hidden">
         <aside className="w-80 bg-white border-r flex flex-col">
           <div className="p-4 border-b">
@@ -384,7 +399,32 @@ export default function App() {
           </div>
         </main>
       </div>
+      )}
     </div>
+  );
+}
+
+function TabButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={
+        "text-xs font-medium px-3 py-1.5 rounded-md transition " +
+        (active
+          ? "bg-white text-indigo-700 shadow-sm"
+          : "bg-white/10 text-white/80 hover:bg-white/20")
+      }
+    >
+      {children}
+    </button>
   );
 }
 

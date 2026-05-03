@@ -13,6 +13,8 @@ from pydantic import BaseModel, Field
 from .foundry_client import health_snapshot, stream_chat
 from .leak_toggle import leak_size_mb, maybe_leak
 from .settings import get_settings
+from .trials import router as trials_router
+from .watches import router as watches_router
 
 log = logging.getLogger("api")
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"))
@@ -29,6 +31,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(watches_router)
+app.include_router(trials_router)
 
 
 class ChatRequest(BaseModel):

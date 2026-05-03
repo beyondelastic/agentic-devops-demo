@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Literal
 
 from fastapi import HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class Trial(BaseModel):
@@ -36,6 +36,39 @@ class SearchRequest(BaseModel):
     sex: Literal["male", "female", "all"] | None = None
     phase: str | None = None
     limit: int = Field(default=10, ge=1, le=50)
+
+    # The Foundry agent occasionally sends `phase: 2` (int) instead of "Phase 2".
+    # Coerce numerics and bare strings into the canonical "Phase N" form so the
+    # request validates and the substring match in search_trials still works.
+    @field_validator("phase", mode="before")
+    @classmethod
+    def _coerce_phase(cls, v):  # noqa: ANN001
+        if v is None:
+            return None
+        if isinstance(v, (int | float)):
+            return f"Phase {int(v)}"
+        s = str(v).strip()
+        if not s:
+            return None
+        # bare digits ("2") -> "Phase 2"
+        if s.isdigit():
+            return f"Phase {s}"
+        return s
+
+
+class NewTrialRequest(BaseModel):
+    """Demo-only: append a synthetic trial to the in-memory list."""
+
+    id: str | None = None
+    title: str = Field(min_length=1, max_length=200)
+    condition: str = Field(min_length=1, max_length=120)
+    phase: str | None = None
+    location: str | None = None
+    age_min: int | None = Field(default=None, ge=0, le=120)
+    age_max: int | None = Field(default=None, ge=0, le=120)
+    sex: Literal["male", "female", "all"] | None = None
+    inclusion_criteria: list[str] | None = None
+    exclusion_criteria: list[str] | None = None
 
 
 class TrialSummary(BaseModel):
