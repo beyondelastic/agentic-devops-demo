@@ -162,23 +162,53 @@ Flow: `POST /api/watches` → Redis → watcher tick reads watches → `tools` s
 ### On-stage script
 
 1. **Open the AKS ingress** (`http://<lb-ip>.nip.io/`) → click the **🔭 Trial Watch** tab.
-   You'll see three seeded watches (Aunt Helen NSCLC, Patient B melanoma, cohort screening) with score badges, tier labels, and a green "live" pill — that's the SSE stream.
-2. **Show what makes this AKS-shaped** — flip to a terminal:
+   You'll see three seeded watches (Aunt Helen NSCLC, Patient B melanoma, cohort screening) with score badges, tier labels, and a green "live" pill — that's the SSE stream from the API.
+
+2. **KAITO is how the model got there** — flip to a terminal:
    ```bash
-   kubectl -n trial-matcher get pods -l app=watcher
-   kubectl -n trial-matcher logs deploy/watcher --tail=20
+   kubectl get workspace -n trial-matcher
+   kubectl -n trial-matcher get pod -l kaito.sh/workspace=workspace-llama-3-3b -o wide
    ```
-   Point at the lines:
+   Then open [aks/kaito/workspace-llama-3-3b.yaml](../aks/kaito/workspace-llama-3-3b.yaml) for one shot. Talking points:
+   - "**KAITO — Kubernetes AI Toolchain Operator from Microsoft.** A `Workspace` CRD: I declare *what model* and *what node it runs on*; KAITO produces the Deployment + Service + readiness probes."
+   - Point at `inference.template.spec.containers[0].image: ghcr.io/kaito-project/aikit/llama3.2:3b` and `resource.labelSelector.matchLabels: { apps: llama-3-3b }`.
+   - "No Bicep for the model, no GPU node pool, no download script. KAITO is the GitOps interface to the model."
+
+3. **The model itself: open-source Llama, on CPU.** Same terminal:
+   ```bash
+   kubectl -n trial-matcher exec deploy/watcher -- python -c \
+     "import urllib.request; \
+      print(urllib.request.urlopen('http://workspace-llama-3-3b/v1/models').read().decode())" \
+     | jq
+   ```
+   *(The watcher image is slim and has no `curl`; we hit `/v1/models` with stdlib Python instead.)*
+   Expected:
+   ```json
+   { "object": "list", "data": [ { "id": "llama-3.2-3b-instruct", "object": "model" } ] }
+   ```
+   Talking points:
+   - "**Llama 3.2 3B Instruct** — Meta's open-weights SLM, packaged by AIKit into a llama.cpp GGUF Q4_K_M build. **No Azure OpenAI quota, no API key, no data leaving the cluster.**"
+   - "OpenAI-compatible `/v1` API — my watcher calls `chat.completions.create` exactly like it would against GPT-4o."
+   - "Running on a **CPU** node (Standard_D4s_v5). The whole point of an SLM: real inference without a GPU bill."
+
+4. **The watcher: a stateful inference loop.** Same terminal:
+   ```bash
+   kubectl -n trial-matcher logs -f deploy/watcher --tail=5
+   ```
+   Wait ~10s and point at one tick:
    ```
    watcher tick start watches=3
-   HTTP Request: POST http://tools:8000/tools/search_trials "200 OK"
-   HTTP Request: POST http://workspace-llama-3-3b/v1/chat/completions "200 OK"
-   match watch=demo-w1 trial=TM-2025-001 score=60 prev=60 new=False
+   POST http://tools:8000/tools/search_trials "200 OK"
+   POST http://workspace-llama-3-3b/v1/chat/completions "200 OK"
+   match watch=demo-w1 trial=TM-2025-001 score=40 prev=40 new=False
    ```
-   "Every 45 seconds, in-cluster. No Foundry call here — that's our open-source Llama running on a CPU node next door."
-3. **Inject a fresh trial live.** Back in the UI, click **`+ Import trial`** → **`fill with NSCLC example`** → **Add trial**.
+   "Every 45 seconds, **in-cluster**: pull trials → score each pair against the in-cluster Llama → write back to Redis → stream the diff to the browser over SSE. No Foundry call, no outbound model traffic."
+
+5. **The live moment — inject a fresh trial.** Back in the UI, click **`+ Import trial`** → **`fill with NSCLC example`** → **Add trial**.
    A toast appears: *Added trial TM-DEMO-XXXXXX — next watcher tick will pick it up and emit a NEW pill.*
-4. **Wait one tick (~45s).** The Aunt Helen card should:
+   Glance at the watcher log tail — `trials_found` ticks up by one and a new `match` line for Aunt Helen prints.
+
+6. **Wait one tick (~45s).** The Aunt Helen card should:
    - flash an indigo pulse border (recent-update animation),
    - gain a `1 NEW` aggregate badge in the header,
    - show the new trial result with a `NEW` pill and an emerald score badge (**≈80–100, "Strong match"** — the watcher pre-computes age/sex/location verdicts in Python and feeds them to the 3B model as ground truth, then floors the score at 80 when every hard check passes).
@@ -189,7 +219,8 @@ Flow: `POST /api/watches` → Redis → watcher tick reads watches → `tools` s
    age to 30) — next tick re-scores existing trials, the location/age
    verdicts flip, and the rose-coloured `▼N` badge shows up next to the
    affected score.
-5. **Closing line:** "Same containers, same pipeline, same agent — plus a stateful inference loop and an open-source model that lives inside the cluster. ACA for the fastest path. AKS when you need the ceiling."
+
+7. **Closing line:** "Same Helm chart, same container pipeline as the ACA stack — *plus* a long-running watcher and an open-source model managed by KAITO. ACA when you want the fastest path to a request/response API. **AKS when the workload itself runs forever.**"
 
 ### If something goes sideways
 
